@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodPro Investigation Tool</title>
+<script>
+  const API_KEY = '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';
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f2f1ed;color:#1a1a18;min-height:100vh}
+.header{background:#1a1a18;color:#f2f1ed;padding:1rem 2rem;display:flex;align-items:center;gap:1rem}
+.logo{width:34px;height:34px;background:#e8c547;border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#1a1a18;flex-shrink:0}
+.header-text h1{font-size:15px;font-weight:500;letter-spacing:0.02em}
+.header-text p{font-size:11px;color:#888;margin-top:2px}
+.container{max-width:860px;margin:0 auto;padding:1.75rem 1.5rem}
+.type-bar{display:flex;border:0.5px solid #ccc;border-radius:8px;overflow:hidden;margin-bottom:1.25rem}
+.tb{flex:1;padding:11px 8px;background:#fff;border:none;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;color:#888;border-right:0.5px solid #ddd;transition:all 0.15s}
+.tb:last-child{border-right:none}
+.tb.active{background:#1a1a18;color:#f2f1ed}
+.tb:hover:not(.active){background:#f2f1ed}
+.card{background:#fff;border:0.5px solid #d4d2c9;border-radius:10px;padding:1.25rem;margin-bottom:1rem}
+.sl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#aaa;margin-bottom:0.8rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.f{display:flex;flex-direction:column;gap:4px}
+.f.s2{grid-column:1/-1}
+label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.05em}
+input[type=text],input[type=date],input[type=time],select,textarea{font-family:inherit;font-size:13px;padding:8px 10px;border:0.5px solid #ccc;border-radius:6px;background:#fafaf8;color:#1a1a18;outline:none;width:100%;transition:border-color 0.15s}
+input:focus,select:focus,textarea:focus{border-color:#1a1a18;background:#fff}
+textarea{resize:vertical;line-height:1.55}
+.ao{display:none}
+.btn-gen{width:100%;padding:13px;background:#1a1a18;color:#f2f1ed;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:opacity 0.15s;margin-top:0.5rem}
+.btn-gen:hover{opacity:0.82}
+.btn-gen:disabled{opacity:0.35;cursor:not-allowed}
+.loading{text-align:center;padding:2.5rem;display:none;color:#888;font-size:13px}
+.dot{display:inline-block;width:7px;height:7px;background:#e8c547;border-radius:50%;margin:0 3px;animation:pu 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}
+.dot:nth-child(3){animation-delay:.4s}
+@keyframes pu{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.out{margin-top:1.5rem;display:none}
+.ob{background:#fff;border:0.5px solid #d4d2c9;border-radius:10px;margin-bottom:1.1rem;overflow:hidden}
+.oh{background:#1a1a18;color:#f2f1ed;padding:10px 1.1rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;display:flex;align-items:center;justify-content:space-between}
+.ob-body{padding:1.1rem}
+.cpbtn{background:transparent;border:0.5px solid rgba(255,255,255,0.35);color:rgba(255,255,255,0.75);padding:4px 12px;border-radius:4px;font-family:inherit;font-size:11px;cursor:pointer;transition:all 0.15s}
+.cpbtn:hover{background:rgba(255,255,255,0.15);color:#fff}
+.fr{display:grid;grid-template-columns:175px 1fr;border-bottom:0.5px solid #ebe9e3;padding:9px 0;align-items:start}
+.fr:last-child{border-bottom:none}
+.fl{font-size:11px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.04em;padding-right:0.75rem;padding-top:2px;line-height:1.4}
+.fv{font-size:13px;color:#1a1a18;line-height:1.65;white-space:pre-wrap}
+.subsec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#bbb;padding:10px 0 5px;border-top:0.5px solid #ebe9e3;margin-top:2px}
+.subsec:first-child{border-top:none;padding-top:0;margin-top:0}
+.sb{border-left:3px solid #e8c547;background:#faf9f5;padding:0.85rem 1rem;border-radius:0 6px 6px 0;margin-bottom:0.8rem}
+.sb:last-child{margin-bottom:0}
+.sb.why{border-left-color:#c09030}
+.sb.stop{border-left-color:#4a8a4a}
+.sb h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:#aaa;margin-bottom:6px}
+.sb p{font-size:13px;line-height:1.65;color:#1a1a18;margin-bottom:5px}
+.sb p:last-child{margin-bottom:0}
+.err{background:#fff5f5;border:0.5px solid #f5a0a0;border-radius:8px;padding:0.85rem 1rem;color:#c0392b;font-size:13px;margin-top:0.75rem;display:none}
+@media(max-width:600px){
+  .g2,.g4{grid-template-columns:1fr}
+  .container{padding:1rem}
+  .header{padding:1rem}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">BFG</div>
+  <div class="header-text">
+    <h1>Investigation Documentation Tool</h1>
+    <p>Browns Food Group / FoodPro &mdash; Carl Rickard, H&amp;S Manager</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="type-bar">
+    <button class="tb active" id="tb-nm" onclick="setType('nm')">Near miss</button>
+    <button class="tb" id="tb-acc" onclick="setType('acc')">Accident</button>
+    <button class="tb" id="tb-inc" onclick="setType('inc')">Incident</button>
+  </div>
+
+  <div class="card">
+    <div class="sl">Incident details</div>
+    <div class="g4">
+      <div class="f"><label>Ref no.</label><input type="text" id="ref" placeholder="e.g. NM0726"></div>
+      <div class="f"><label>Date</label><input type="date" id="idate"></div>
+      <div class="f"><label>Time</label><input type="time" id="itime"></div>
+      <div class="f"><label>Location</label><input type="text" id="loc" placeholder="e.g. Line 3"></div>
+    </div>
+    <div class="g2">
+      <div class="f"><label>Person involved</label><input type="text" id="person" placeholder="Name and role"></div>
+      <div class="f"><label>Department</label>
+        <select id="dept">
+          <option value="">Select...</option>
+          <option>Production</option><option>Engineering</option><option>Hygiene</option>
+          <option>Warehouse</option><option>Mixing Room</option><option>Sauce</option>
+          <option>Despatch</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:0">
+      <div class="f"><label>Employee type</label>
+        <select id="etype">
+          <option value="">Select...</option>
+          <option>Employee</option><option>Agency</option><option>Contractor</option>
+        </select>
+      </div>
+      <div class="f ao"><label>Body part injured</label><input type="text" id="bodypart" placeholder="e.g. Middle finger, right hand"></div>
+    </div>
+    <div class="g2 ao" style="margin-top:10px">
+      <div class="f"><label>Injury type</label><input type="text" id="injtype" placeholder="e.g. Crush injury, laceration"></div>
+      <div class="f"><label>Days lost</label><input type="text" id="dayslost" placeholder="0 if none"></div>
+    </div>
+    <div class="g2 ao" style="margin-top:10px;margin-bottom:0">
+      <div class="f s2"><label>First aid given</label><input type="text" id="firstaid" placeholder="e.g. Ice pack applied, sent to A&E — Sharon Holland"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sl">What happened &mdash; paste your notes</div>
+    <textarea id="notes" rows="7" placeholder="Paste your raw notes, email draft, CCTV observations, statements — anything. The more detail the better."></textarea>
+  </div>
+
+  <button class="btn-gen" id="genBtn" onclick="generate()">Generate all documents</button>
+  <div class="err" id="errBox"></div>
+  <div class="loading" id="loader">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <p style="margin-top:0.9rem">Generating documentation...</p>
+  </div>
+
+  <div class="out" id="out">
+    <div class="ob"><div class="oh">Summary briefing <button class="cpbtn" onclick="copySummary()">Copy</button></div><div class="ob-body" id="sumOut"></div></div>
+    <div class="ob"><div class="oh" id="trLabel">Tracker <button class="cpbtn" onclick="copyF('trOut')">Copy</button></div><div class="ob-body" id="trOut"></div></div>
+    <div class="ob"><div class="oh" id="fpLabel">FoodPro investigation pack <button class="cpbtn" onclick="copyF('fpOut')">Copy</button></div><div class="ob-body" id="fpOut"></div></div>
+    <div class="ob"><div class="oh">Browns investigation pack <button class="cpbtn" onclick="copyF('brOut')">Copy</button></div><div class="ob-body" id="brOut"></div></div>
+  </div>
+
+</div>
+
+<script>
+let cType = 'nm';
+
+function setType(t) {
+  cType = t;
+  ['nm','acc','inc'].forEach(x => document.getElementById('tb-'+x).classList.remove('active'));
+  document.getElementById('tb-'+t).classList.add('active');
+  document.querySelectorAll('.ao').forEach(e => e.style.display = t === 'acc' ? '' : 'none');
+  document.getElementById('out').style.display = 'none';
+  document.getElementById('errBox').style.display = 'none';
+}
+
+function getSys() {
+  const b = `You generate investigation documentation for Browns Food Group (FoodPro), a frozen ready meal factory in Wigan. H&S Manager is Carl Rickard. Write plain direct English — factual, professional, no waffle. Sound like an experienced H&S person wrote it. Return ONLY valid JSON, no markdown, no preamble.`;
+
+  if (cType === 'nm') return b + ` Return exactly: {"summary_what":"what happened paragraph","summary_why":"why it happened paragraph","summary_actions":["action1","action2","action3"],"t_details":"1-3 sentence near miss details","t_cause":"concise root cause","t_invest":"who investigated and how","t_correct":"specific named corrective actions","fp_activity":"activity at time of near miss","fp_what":"clear narrative of what happened","fp_invest":"investigated report and action taken","fp_outcome":"outcome — what changed and what was put in place","br_where":"where it happened","br_activity":"work activity at the time","br_describe":"description of what happened","br_causes":["cause1","cause2"],"br_correct":["action1","action2"]}`;
+
+  if (cType === 'acc') return b + ` Return exactly: {"summary_what":"paragraph","summary_why":"paragraph","summary_actions":["a1","a2","a3"],"t_details_cause":"3-5 sentence details and cause combined","t_invest":"investigation method — who, what methods","t_correct":"specific named corrective actions","fp_where_when":"location date time context","fp_who":"name role employment type background","fp_activities":"activities being carried out at the time","fp_how":"detailed narrative of how it happened","fp_injuries":"injuries caused — body part and mechanism","fp_medical":"medical advice and treatment given","fp_competent":"should they have been doing this job","fp_training":"competent and suitable — training record","fp_auth":"authorised to use equipment","fp_conditions":"anything unusual about working conditions","fp_layout":"did workplace layout influence the event","fp_org":"did work organisation influence the event","fp_maint":"was maintenance and cleaning sufficient","fp_procs":"were SWPs in place and were they followed","fp_ppe":"was PPE worn","fp_risk":"was risk known — why not controlled","fp_mats":"did nature of materials or equipment influence event","fp_equip":"did difficulties using equipment influence event","fp_safety":"was safety equipment sufficient","fp_damage":"did any damage occur to equipment","fp_dmg_rep":"has damaged equipment been reported","fp_other":"did other conditions influence the event","fp_similar":"do similar risks exist elsewhere","fp_prev":"have similar events happened before","fp_short":["short term measure 1","short term measure 2"],"fp_long":["long term measure 1"],"fp_ra":["risk assessment to review"],"fp_swi":["SWP to review"],"br_where":"where","br_activity":"activity","br_describe":"description","br_causes":["cause1","cause2"],"br_correct":["action1","action2"]}`;
+
+  return b + ` Return exactly: {"summary_what":"paragraph","summary_why":"paragraph","summary_actions":["a1","a2","a3"],"t_details":"incident details — what happened and what was damaged","t_cause":"root cause","t_invest":"who investigated and what was reviewed","t_correct":"specific named corrective actions","fp_activity":"work activity at time of incident","fp_how":"detailed narrative of how incident happened","fp_equip":"equipment materials or property damaged","fp_dmg_type":"type of damage","fp_cond":"was equipment in good condition before","fp_faults":"any faults or limitations with equipment","fp_eng":"engineer or competent person inspection outcome","fp_who":"who was involved — names and roles","fp_auth":"were they authorised and trained","fp_house":"was housekeeping maintenance and cleaning adequate","fp_procs":"were SWPs in place and followed","fp_ra":"are risk assessments relevant to this task in place","fp_risk_id":"has this risk been identified previously — why not controlled","fp_other":"did other conditions influence the incident","fp_similar":"do similar risks exist elsewhere","fp_prev":"have similar events happened before","fp_measures":["control measure 1","control measure 2"],"fp_ra_rev":["risk assessment to review"],"br_where":"where","br_activity":"activity","br_describe":"description","br_causes":["cause1","cause2"],"br_correct":["action1","action2"]}`;
+}
+
+async function generate() {
+  const notes = document.getElementById('notes').value.trim();
+  if (!notes) { showErr('Please enter some details about what happened.'); return; }
+
+  if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
+    showErr('API key not set. Open index.html in a text editor and replace YOUR_API_KEY_HERE with your Anthropic API key.');
+    return;
+  }
+
+  const ref = document.getElementById('ref').value.trim();
+  const dt = document.getElementById('idate').value;
+  const tm = document.getElementById('itime').value;
+  const loc = document.getElementById('loc').value.trim();
+  const person = document.getElementById('person').value.trim();
+  const dept = document.getElementById('dept').value;
+  const etype = document.getElementById('etype').value;
+  const bodypart = document.getElementById('bodypart').value.trim();
+  const injtype = document.getElementById('injtype').value.trim();
+  const dayslost = document.getElementById('dayslost').value.trim();
+  const firstaid = document.getElementById('firstaid').value.trim();
+
+  let up = `Generate ${cType === 'nm' ? 'near miss' : cType === 'acc' ? 'accident' : 'incident'} documentation.\nRef: ${ref||'TBC'}\nDate: ${dt||'TBC'}\nTime: ${tm||'TBC'}\nLocation: ${loc||'TBC'}\nPerson: ${person||'TBC'}\nDept: ${dept||'TBC'}\nEmployee type: ${etype||'TBC'}`;
+  if (cType === 'acc') up += `\nBody part: ${bodypart||'TBC'}\nInjury type: ${injtype||'TBC'}\nDays lost: ${dayslost||'TBC'}\nFirst aid: ${firstaid||'TBC'}`;
+  up += `\n\nNotes:\n${notes}`;
+
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('loader').style.display = 'block';
+  document.getElementById('out').style.display = 'none';
+  document.getElementById('errBox').style.display = 'none';
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: getSys(), messages: [{ role: 'user', content: up }] })
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error.message);
+    const txt = data.content.map(i => i.text || '').join('');
+    const d = JSON.parse(txt.replace(/```json|```/g, '').trim());
+    const dd = dt ? new Date(dt).toLocaleDateString('en-GB') : 'TBC';
+    render(d, { ref, date: dd, time: tm, loc, person, dept, etype, bodypart, injtype, dayslost, firstaid });
+  } catch(e) {
+    showErr('Something went wrong — please try again. (' + e.message + ')');
+  } finally {
+    document.getElementById('genBtn').disabled = false;
+    document.getElementById('loader').style.display = 'none';
+  }
+}
+
+function render(d, m) {
+  document.getElementById('sumOut').innerHTML =
+    sb('What happened', d.summary_what) +
+    sb('Why it happened', d.summary_why, 'why') +
+    sb('How do we stop it happening again', (d.summary_actions||[]).map(a => '• ' + a).join('\n'), 'stop');
+
+  if (cType === 'nm') {
+    setLabel('trLabel', 'Near miss tracker');
+    setLabel('fpLabel', 'FoodPro investigation pack');
+    document.getElementById('trOut').innerHTML = rows([
+      ['Ref', m.ref||'TBC'],['Date', m.date],['Location', m.loc||'TBC'],
+      ['Person', m.person||'TBC'],['Dept / type', [m.dept,m.etype].filter(Boolean).join(' / ')||'TBC'],
+      ['Near miss details', d.t_details],['Cause', d.t_cause],
+      ['Investigation level', d.t_invest],['Corrective action', d.t_correct]
+    ]);
+    document.getElementById('fpOut').innerHTML = rows([
+      ['Ref log no.', m.ref||'TBC'],['Date', m.date],['Time', m.time||'TBC'],
+      ['Location', m.loc||'TBC'],['Person reporting', 'Carl Rickard'],
+      ['Activity involved', d.fp_activity],['What happened', d.fp_what],
+      ['Investigated report & action taken', d.fp_invest],['Outcome', d.fp_outcome]
+    ]);
+
+  } else if (cType === 'acc') {
+    setLabel('trLabel', 'Accident tracker');
+    setLabel('fpLabel', 'FoodPro accident investigation pack');
+    document.getElementById('trOut').innerHTML = rows([
+      ['Ref', m.ref||'TBC'],['Date', m.date],
+      ['Person', m.person||'TBC'],['Dept / type', [m.dept,m.etype].filter(Boolean).join(' / ')||'TBC'],
+      ['Body part / injury', [m.bodypart,m.injtype].filter(Boolean).join(' — ')||'TBC'],
+      ['Days lost', m.dayslost||'0'],['First aid given', m.firstaid||'TBC'],
+      ['Details & cause', d.t_details_cause],['Investigation level', d.t_invest],
+      ['Actions / corrective actions', d.t_correct]
+    ]);
+    document.getElementById('fpOut').innerHTML =
+      sec('What happened') + rows([['1. Where & when',d.fp_where_when],['2. Who involved',d.fp_who],['3. Activities at the time',d.fp_activities],['4. How it happened',d.fp_how],['5. Injuries caused',d.fp_injuries],['6. Medical advice',d.fp_medical]]) +
+      sec('Competence & training') + rows([['1. Should they do this job',d.fp_competent],['2. Competent — training record',d.fp_training],['3. Authorised for equipment',d.fp_auth]]) +
+      sec('Environment') + rows([['1. Unusual conditions',d.fp_conditions],['2. Layout influence',d.fp_layout],['3. Work organisation',d.fp_org],['4. Maintenance & cleaning',d.fp_maint]]) +
+      sec('Procedures') + rows([['1. SWPs in place & followed',d.fp_procs],['2. PPE worn',d.fp_ppe],['3. Risk known — why not controlled',d.fp_risk]]) +
+      sec('Equipment & materials') + rows([['1. Materials / equipment',d.fp_mats],['2. Equipment difficulties',d.fp_equip],['3. Safety equipment',d.fp_safety],['4. Equipment damage',d.fp_damage],['5. Damage reported',d.fp_dmg_rep]]) +
+      sec('Other') + rows([['1. Other conditions',d.fp_other],['2. Similar risks elsewhere',d.fp_similar],['3. Similar events before',d.fp_prev]]) +
+      sec('Action plan') + rows([['Short term measures',(d.fp_short||[]).map((a,i)=>`${i+1}. ${a}`).join('\n')],['Long term measures',(d.fp_long||[]).map((a,i)=>`${i+1}. ${a}`).join('\n')]]) +
+      sec('Document review') + rows([['Risk assessments to review',(d.fp_ra||[]).join('\n')],['SWPs to review',(d.fp_swi||[]).join('\n')]]);
+
+  } else {
+    setLabel('trLabel', 'Incident tracker');
+    setLabel('fpLabel', 'FoodPro incident investigation pack');
+    document.getElementById('trOut').innerHTML = rows([
+      ['Ref', m.ref||'TBC'],['Date', m.date],['Location', m.loc||'TBC'],
+      ['Person', m.person||'TBC'],['Dept / type', [m.dept,m.etype].filter(Boolean).join(' / ')||'TBC'],
+      ['Incident details', d.t_details],['Cause', d.t_cause],
+      ['Investigation level', d.t_invest],['Corrective action', d.t_correct]
+    ]);
+    document.getElementById('fpOut').innerHTML =
+      sec('What happened') + rows([['1. Activity at the time',d.fp_activity],['2. How it happened',d.fp_how]]) +
+      sec('Equipment / property affected') + rows([['1. Equipment damaged',d.fp_equip],['2. Damage type',d.fp_dmg_type],['3. Condition before',d.fp_cond],['4. Faults / limitations',d.fp_faults],['5. Engineer inspection',d.fp_eng]]) +
+      sec('People involved') + rows([['1. Who was involved',d.fp_who],['2. Authorised & trained',d.fp_auth],['3. Housekeeping / maintenance',d.fp_house]]) +
+      sec('Procedures & controls') + rows([['1. SWPs in place & followed',d.fp_procs],['2. Risk assessments in place',d.fp_ra],['3. Risk identified previously',d.fp_risk_id]]) +
+      sec('Other') + rows([['1. Other conditions',d.fp_other],['2. Similar risks elsewhere',d.fp_similar],['3. Similar events before',d.fp_prev]]) +
+      sec('Action plan') + rows([['Control measures',(d.fp_measures||[]).map((a,i)=>`${i+1}. ${a}`).join('\n')],['Risk assessments to review',(d.fp_ra_rev||[]).join('\n')]]);
+  }
+
+  document.getElementById('brOut').innerHTML = rows([
+    ['Where did it happen?', d.br_where],
+    ['Work activity', d.br_activity],
+    ['Describe what happened', d.br_describe],
+    ['Possible causes', (d.br_causes||[]).map((c,i) => `${i+1}. ${c}`).join('\n')],
+    ['Corrective actions taken', (d.br_correct||[]).map((c,i) => `${i+1}. ${c}`).join('\n')]
+  ]);
+
+  document.getElementById('out').style.display = 'block';
+  document.getElementById('out').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function setLabel(id, text) {
+  const el = document.getElementById(id);
+  el.childNodes[0].textContent = text + ' ';
+}
+function sb(title, content, cls) {
+  return `<div class="sb${cls?' '+cls:''}"><h3>${esc(title)}</h3>${String(content||'').split('\n').map(l => `<p>${esc(l)}</p>`).join('')}</div>`;
+}
+function sec(t) { return `<div class="subsec">${esc(t)}</div>`; }
+function rows(data) {
+  return data.map(([l,v]) => `<div class="fr"><div class="fl">${esc(l)}</div><div class="fv">${esc(v||'N/A')}</div></div>`).join('');
+}
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function copySummary() {
+  const t = Array.from(document.querySelectorAll('#sumOut .sb')).map(b =>
+    b.querySelector('h3').textContent.trim().toUpperCase() + '\n' +
+    Array.from(b.querySelectorAll('p')).map(p => p.innerText.trim()).join('\n')
+  ).join('\n\n');
+  navigator.clipboard.writeText(t);
+}
+function copyF(id) {
+  const t = Array.from(document.querySelectorAll('#'+id+' .fr')).map(r =>
+    r.querySelector('.fl').textContent.trim() + ':\n' + r.querySelector('.fv').innerText.trim()
+  ).join('\n\n');
+  navigator.clipboard.writeText(t);
+}
+function showErr(msg) {
+  const e = document.getElementById('errBox');
+  e.textContent = msg;
+  e.style.display = 'block';
+}
+</script>
+</body>
+</html>
